@@ -1,5 +1,7 @@
-<!DOCTYPE html><html><head>
-        <meta charset="utf-8">
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
         <title>Nertz.pro</title>
         <style>
             @font-face {
@@ -101,11 +103,21 @@
                 margin-left: -6px;
             }
         </style>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         
-        <link rel="icon" href="static/logo.png">
-    
-<link rel="preload" href="/nertz-5f360546b095b2ce_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
-<link rel="modulepreload" href="/nertz-5f360546b095b2ce.js"></head>
-<body>
-<script type="module">import init from '/nertz-5f360546b095b2ce.js';init('/nertz-5f360546b095b2ce_bg.wasm');</script></body></html>
+        <link rel="icon" href="static/logo.png" />
+        
+<script type="module">
+import init, * as bindings from '/nertz-b8fa6b9969bd511b.js';
+const wasm = await init({ module_or_path: '/nertz-b8fa6b9969bd511b_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
+    <link rel="modulepreload" href="/nertz-b8fa6b9969bd511b.js" crossorigin="anonymous" integrity="sha384-u2ZqONPcOfYYMZmWL0BBXVFCuHgk+wslfQnJItLyLntKFlP5ZKsd0pMkCVtPKjSd"><link rel="preload" href="/nertz-b8fa6b9969bd511b_bg.wasm" crossorigin="anonymous" integrity="sha384-qAaTFVjizudFHSVvrBQmhDhRc3SpKLtdpXSNxfte5vxPGjfhA6RQbtgRJVHZPbe3" as="fetch" type="application/wasm"></head>
+    <body></body>
+</html>
