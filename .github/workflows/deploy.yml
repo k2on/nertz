@@ -26,7 +26,7 @@ jobs:
               run: trunk build --release
 
             - name: Add CNAME
-              run: echo nertz.pro>dist/CNAME
+              run: echo nertz.koon.us>dist/CNAME
 
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
