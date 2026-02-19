@@ -343,122 +343,120 @@ impl Component for App {
         let is_game_over = self.state.is_game_over();
 
         html! {
-            <body>
-                <div class="container">
-                    <img id="logo" src="static/logo.png" alt="NERTS.PRO"/>
-                    {if self.state.is_in_progress {
-                        html! {
-                            <div>
-                    <table class="scores">
+            <div class="container">
+                <img id="logo" src="static/logo.png" alt="NERTS.PRO"/>
+                {if self.state.is_in_progress {
+                    html! {
+                        <div>
+                <table class="scores">
 
-                    <tr>
-                        { for self.state.players.iter().enumerate().map(|(idx, player)| html! {
-                            <td>{if is_game_over {
-                                let (place_idx, _) = self.leaderboard.iter().enumerate().find(|(_, &p)| idx.eq(&p)).unwrap();
+                <tr>
+                    { for self.state.players.iter().enumerate().map(|(idx, player)| html! {
+                        <td>{if is_game_over {
+                            let (place_idx, _) = self.leaderboard.iter().enumerate().find(|(_, &p)| idx.eq(&p)).unwrap();
 
-                                let metal = match place_idx {
-                                    0 => Some("gold"),
-                                    1 => Some("silver"),
-                                    2 => Some("bronze"),
-                                    _ => None
-                                };
-                                if let Some(metal) = metal {
-                                    let url = format!("static/{}.png", metal);
-                                    html! {
-                                        <img class="metal" src={url}/>
-                                    }
-                                } else {
-                                    html! {}
+                            let metal = match place_idx {
+                                0 => Some("gold"),
+                                1 => Some("silver"),
+                                2 => Some("bronze"),
+                                _ => None
+                            };
+                            if let Some(metal) = metal {
+                                let url = format!("static/{}.png", metal);
+                                html! {
+                                    <img class="metal" src={url}/>
                                 }
                             } else {
                                 html! {}
-                            }}
-                            {self.find_unique_prefix(idx)}
-                            {if is_game_over { html! { <><br/><br/></> } } else { html! {} }}
-                            {self.view_player_sum(idx)}</td>
-                        }) }
-                    </tr>
-
-                    { for self.state.scores.iter().enumerate().map(|(round_idx, round)| html! {
-                        <tr>
-                        { for round.iter().enumerate().map(|(player_idx, score)| {
-
-                            let key = format!("{}_{}", round_idx, player_idx);
-                            let node_ref = self.refs.get(&key).unwrap();
-
-                            let onkeypress = ctx.link().batch_callback(move |e: KeyboardEvent| {
-                                if e.key() == "Enter" {
-                                    let input: HtmlInputElement = e.target_unchecked_into();
-                                    let val = input.value().parse::<i8>().unwrap();
-                                    Some(AppMsg::ScoreEnter(round_idx, player_idx, val))
-                                } else {
-                                    None
-                                }
-                            });
-
-                            let onclick = ctx.link().callback(move |_| {
-                                AppMsg::ScoreEdit(round_idx, player_idx)
-                            });
-
-                            html! {
-                                <td {onclick}>
-                                {if score.is_editing {
-                                    html! {
-                                        <input ref={node_ref} {onkeypress} value={if let Some(s) = score.val { s.to_string() } else { String::new() }} type="number"/>
-                                    }
-                                } else {
-                                    html! {
-                                        {if let Some(score) = score.val {
-                                            let class = Classes::from("score");
-
-                                            let percent: f64 = (score as f64 + self.state.negative_size as f64) / self.state.deck_size as f64;
-                                            let color = self.gradient.at(percent).to_hex_string();
-                                            let style = "color: ".to_owned() + &color;
-
-                                            html! {
-                                                <span {style} {class}>{score.to_string()}</span>
-                                            }
-                                        } else {
-                                            html! {
-                                                {"--"}
-                                            }
-                                        }}
-                                    }
-                                }}
-                                </td>
                             }
-                        })}
-                        </tr>
+                        } else {
+                            html! {}
+                        }}
+                        {self.find_unique_prefix(idx)}
+                        {if is_game_over { html! { <><br/><br/></> } } else { html! {} }}
+                        {self.view_player_sum(idx)}</td>
                     }) }
+                </tr>
 
-                    </table>
-                    <div class="button">
-                        <button onclick={ctx.link().callback(move |_| AppMsg::GameNew)}>{"NEW GAME"}</button>
-                    </div>
-                    </div>
+                { for self.state.scores.iter().enumerate().map(|(round_idx, round)| html! {
+                    <tr>
+                    { for round.iter().enumerate().map(|(player_idx, score)| {
 
+                        let key = format!("{}_{}", round_idx, player_idx);
+                        let node_ref = self.refs.get(&key).unwrap();
 
-                        }
+                        let onkeypress = ctx.link().batch_callback(move |e: KeyboardEvent| {
+                            if e.key() == "Enter" {
+                                let input: HtmlInputElement = e.target_unchecked_into();
+                                let val = input.value().parse::<i8>().unwrap();
+                                Some(AppMsg::ScoreEnter(round_idx, player_idx, val))
+                            } else {
+                                None
+                            }
+                        });
 
-                    } else {
-                        let disabled = self.state.players.len() < 2;
+                        let onclick = ctx.link().callback(move |_| {
+                            AppMsg::ScoreEdit(round_idx, player_idx)
+                        });
+
                         html! {
-                            <div>
+                            <td {onclick}>
+                            {if score.is_editing {
+                                html! {
+                                    <input ref={node_ref} {onkeypress} value={if let Some(s) = score.val { s.to_string() } else { String::new() }} type="number"/>
+                                }
+                            } else {
+                                html! {
+                                    {if let Some(score) = score.val {
+                                        let class = Classes::from("score");
 
-                                <ul>
-                                    { for self.state.players.iter().enumerate().map(|(idx, player)| self.view_player(idx, player, ctx.link()))}
-                                </ul>
-                                {self.view_input(ctx.link())}
+                                        let percent: f64 = (score as f64 + self.state.negative_size as f64) / self.state.deck_size as f64;
+                                        let color = self.gradient.at(percent).to_hex_string();
+                                        let style = "color: ".to_owned() + &color;
 
-                                <div class="button">
-                                    <button {disabled} onclick={ctx.link().callback(move |_| AppMsg::GameStart)}>{"START GAME"}</button>
-                                </div>
-                            </div>
+                                        html! {
+                                            <span {style} {class}>{score.to_string()}</span>
+                                        }
+                                    } else {
+                                        html! {
+                                            {"--"}
+                                        }
+                                    }}
+                                }
+                            }}
+                            </td>
                         }
+                    })}
+                    </tr>
+                }) }
 
-                    }}
+                </table>
+                <div class="button">
+                    <button onclick={ctx.link().callback(move |_| AppMsg::GameNew)}>{"NEW GAME"}</button>
                 </div>
-            </body>
+                </div>
+
+
+                    }
+
+                } else {
+                    let disabled = self.state.players.len() < 2;
+                    html! {
+                        <div>
+
+                            <ul>
+                                { for self.state.players.iter().enumerate().map(|(idx, player)| self.view_player(idx, player, ctx.link()))}
+                            </ul>
+                            {self.view_input(ctx.link())}
+
+                            <div class="button">
+                                <button {disabled} onclick={ctx.link().callback(move |_| AppMsg::GameStart)}>{"START GAME"}</button>
+                            </div>
+                        </div>
+                    }
+
+                }}
+            </div>
         }
     }
 }
